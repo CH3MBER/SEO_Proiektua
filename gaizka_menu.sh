@@ -54,8 +54,63 @@ function mysqlInstalatu()
  sudo systemctl start mysql.service
 }
 
+#5. Ariketa
+datubasekoerabiltzaileaSortu()
+{
+ echo "CREATE USER 'lsi'@'localhost' IDENTIFIED BY 'lsi';" > "$HOME/datubasekoerabiltzaileasortu.sql"
+ echo "GRANT CREATE,ALTER,DROP,INSERT,UPDATE,INDEX,DELETE,SELECT,REFERENCES,RELOAD on*.* TO 'lsi'@'localhost' WITH GRANT OPTION;" >> "$HOME/datubasekoerabiltzaileasortu.sql"
+ echo "FLUSH PRIVILEGES;" >> "$HOME/datubasekoerabiltzaileasortu.sql"
+ sudo mysql < "$HOME/datubasekoerabiltzaileasortu.sql"
+}
 
+#6. Ariketa
+datubaseaSortu() 
+{
+ sudo mysql < "/var/www/formulariocitas/script.sql"
+}
 
+#7. Ariketa
+ingurunebirtualaSortu()
+{
+ sudo apt-get update
+ sudo apt install python3-dev build-essential libssl-dev libffi-dev python3-setuptools
+ sudo apt install python3-venv
+ sudo apt install -y python3-pip
+ cd /var/www/formulariocitas
+ python3 -m venv venv	
+ source venv/bin/activate
+}
+
+#8. Ariketa
+ingurunebirtualeanliburutegiakInstalatu() 
+{
+ source venv/bin/activate
+ cd /var/www/formulariocitas
+ pip install flask
+ pip install -r requirements.txt
+}
+
+#9. Ariketa
+flaskekozerbirariarekindenaProbatu()
+{
+ cd /var/www/formulariocitas
+ python3 app.py &
+ xdg-open http://127.0.0.1:5000
+}
+
+#10. Ariketa
+nginxInstalatu() 
+{
+ sudo apt update
+ 
+ if ! command -v nginx &> /dev/null
+ then
+    sudo apt install nginx
+ else
+    echo -e " "
+    echo -e "=====ERROR===== Nginx instalatuta dago dagoeneko =====ERROR===== \n"
+ fi
+}
 
 #26. Ariketa
 function menutikIrten()
@@ -73,6 +128,12 @@ do
     echo -e "2 Kokapen berria sortu \n"
     echo -e "3 Proiektu fitxategiak kokapen berrian kopiatu \n"
     echo -e "4 Mysql Instalatu \n"
+    echo -e "5 Datubaseko erabiltzailea sortu \n"
+    echo -e "6 Datubasea sortu \n"
+    echo -e "7 Ingurune birtuala sortu \n"
+    echo -e "8 Ingurune birtualean liburutegiak instalatu \n"
+    echo -e "9 Flaskeko zerbirariarekin dena probatu\n"
+    echo -e "10 Nginx instalatu \n"
     echo -e "26 Menutik irten \n"
     	read -p "Ze aukera egin nahi duzu?" opcionmenuppal
     case $opcionmenuppal in
@@ -81,6 +142,12 @@ do
    		2) kokapenberriaSortu;;
    		3) proiektufitxategiakkokapenberrianKopiatu;;
    		4) mysqlInstalatu;;
+   		5) datubasekoerabiltzaileaSortu;;
+   		6) datubaseaSortu;;
+   		7) ingurunebirtualaSortu;;
+   		8) ingurunebirtualeanliburutegiakInstalatu;;
+   		9) flaskekozerbirariarekindenaProbatu;;
+   		10) nginxInstalatu;;
    	 	26) menutikIrten;;
    	 	*) ;;
     esac
