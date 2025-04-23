@@ -55,7 +55,7 @@ function mysqlInstalatu()
 }
 
 #5. Ariketa
-datubasekoerabiltzaileaSortu()
+function datubasekoerabiltzaileaSortu()
 {
  echo "CREATE USER 'lsi'@'localhost' IDENTIFIED BY 'lsi';" > "$HOME/datubasekoerabiltzaileasortu.sql"
  echo "GRANT CREATE,ALTER,DROP,INSERT,UPDATE,INDEX,DELETE,SELECT,REFERENCES,RELOAD on*.* TO 'lsi'@'localhost' WITH GRANT OPTION;" >> "$HOME/datubasekoerabiltzaileasortu.sql"
@@ -64,13 +64,13 @@ datubasekoerabiltzaileaSortu()
 }
 
 #6. Ariketa
-datubaseaSortu() 
+function datubaseaSortu() 
 {
  sudo mysql < "/var/www/formulariocitas/script.sql"
 }
 
 #7. Ariketa
-ingurunebirtualaSortu()
+function ingurunebirtualaSortu()
 {
  sudo apt-get update
  sudo apt install python3-dev build-essential libssl-dev libffi-dev python3-setuptools
@@ -82,7 +82,7 @@ ingurunebirtualaSortu()
 }
 
 #8. Ariketa
-ingurunebirtualeanliburutegiakInstalatu() 
+function ingurunebirtualeanliburutegiakInstalatu() 
 {
  source venv/bin/activate
  cd /var/www/formulariocitas
@@ -91,7 +91,7 @@ ingurunebirtualeanliburutegiakInstalatu()
 }
 
 #9. Ariketa
-flaskekozerbirariarekindenaProbatu()
+function flaskekozerbirariarekindenaProbatu()
 {
  cd /var/www/formulariocitas
  python3 app.py &
@@ -99,7 +99,7 @@ flaskekozerbirariarekindenaProbatu()
 }
 
 #10. Ariketa
-nginxInstalatu() 
+function nginxInstalatu() 
 {
  sudo apt update
  
@@ -109,6 +109,99 @@ nginxInstalatu()
  else
     echo -e " "
     echo -e "=====ERROR===== Nginx instalatuta dago dagoeneko =====ERROR===== \n"
+ fi
+}
+
+#11. Ariketa
+function nginxMartxanJarri()
+{
+ if ! systemctl is-active --quiet nginx.service;
+ then
+    sudo systemctl start nginx.service
+ else
+    echo -e " " 
+    echo -e "=====ERROR===== Nginx abiaratuta dago dagoeneko =====ERROR===== \n"
+ fi
+}
+
+#12. Ariketa
+function nginxatakaTesteatu()
+{
+ sudo apt install net-tools
+ sudo netstat -anp | grep nginx
+}
+
+#13. Ariketa
+function indexIkusi()
+{
+ firefox http://127.0.0.1
+}
+
+#14. Ariketa
+function indexPertsonalizatu()
+{
+ cd /var/www/html
+ indexKodea='<!DOCTYPE html> 
+  <html>
+  <head>
+<title>GL2-ko bakarrak</title>
+ </head>
+ <body>
+<center>
+    <h1>GL2-ko bakarrak</h1>
+</center>
+<table border="5" bordercolor="red" align="center">
+    <tr>
+        <th colspan="3">GL2-ko bakarrak</th> 
+    </tr>
+    <tr>
+        <th>Izena</th>
+        <th>Abizenak</th>
+        <th>Argazkia</th>
+    </tr>
+     <tr>
+        <td>Surya</th>
+        <td>Ortega</th>
+        <td border=3 height=100 width=100>Photo1</th>
+    </tr>
+    <tr>
+        <td>Gaizka</th>
+        <td>Divasson</th>
+        <td border=3 height=100 width=100>Photo2</th>
+    </tr>
+    <tr>
+        <td>Asier</th>
+        <td>Barrio</th>
+        <td border=3 height=100 width=100>Photo3</th>
+    </tr>
+    <tr>
+        <td>Asier</th>
+        <td>LasHayas</th>
+        <td border=3 height=100 width=100>Photo4</th>
+    </tr>
+</table>
+<center>
+    Talde burua Surya Ortega da
+</center>
+  </body>
+  <html>
+'
+ echo "$indexKodea" > "index.html"
+ mv "index.nginx-debian.html" "index.html"
+ firefox http://127.0.0.1/index.html 
+}
+
+#15. Ariketa
+function gunicornInstalatu()
+{
+ if pip show gunicorn >/dev/null 2>&1;
+ then
+    echo -e " " 
+    echo -e "=====ERROR===== Gunicorn instalatuta dago dagoeneko =====ERROR===== \n"
+ else
+    cd /var/www/formulariocitas
+    source venv/bin/activate
+    pip install gunicorn 
  fi
 }
 
@@ -134,6 +227,11 @@ do
     echo -e "8 Ingurune birtualean liburutegiak instalatu \n"
     echo -e "9 Flaskeko zerbirariarekin dena probatu\n"
     echo -e "10 Nginx instalatu \n"
+    echo -e "11 Nginx martxan jarri \n"
+    echo -e "12 Nginx ataka testeatu \n"
+    echo -e "13 Index ikusi \n"
+    echo -e "14 Index pertsonalizatu \n"
+    echo -e "15 Gunicorn instalatu \n"
     echo -e "26 Menutik irten \n"
     	read -p "Ze aukera egin nahi duzu?" opcionmenuppal
     case $opcionmenuppal in
@@ -148,6 +246,11 @@ do
    		8) ingurunebirtualeanliburutegiakInstalatu;;
    		9) flaskekozerbirariarekindenaProbatu;;
    		10) nginxInstalatu;;
+   		11) nginxMartxanJarri;;
+   		12) nginxatakaTesteatu;;
+   		13) indexIkusi;;
+   		14) indexPertsonalizatu;;
+   		15) gunicornInstalatu;;
    	 	26) menutikIrten;;
    	 	*) ;;
     esac
