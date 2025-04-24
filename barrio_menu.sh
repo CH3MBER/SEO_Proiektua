@@ -162,65 +162,7 @@ function nginxatakaTesteatu()
 #13. Ariketa
 function indexIkusi()
 {
-	index='<!DOCTYPE html>
-	<html>
-	<head>
-	<title>GL2-ko bakarrak</title>
-	</head>
-	<body>
-	<center>
-	<h1>Taldea: GL2-ko bakarrak</h1>
-	<br>
-	<h2>Azpitaldea: Astearteak</h2>
-	</center>
-	<br>
-	<table border="2" align="center">
-		<thead>
-			<tr>
-				<th>Izena</th>
-				<th>Abizenak</th>
-				<th>Posta elektronikoa</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>Surya</th>
-				<td>Ortega Aguirre</th>
-				<td>sortega024@ikasle.ehu.eus</th>
-			</tr>
-			<tr>
-				<td>Gaizka</th>
-				<td>Divasson Jaureguibarria</th>
-				<td>gdivasson001@ikasle.ehu.eus</th>
-			</tr> 
-			<tr>
-				<td>Asier</th>
-				<td>Barrio Borge</th>
-				<td>abarrio028@ikasle.ehu.eus</th>
-			</tr>
-			<tr>
-				<td>Asier</th>
-				<td>Las Hayas Fernández</th>
-				<td>alashayas001@ikasle.ehu.eus</th>
-			</tr>
-			<tr>
-				<td>Uriel</th>
-				<td>Martin Pulido</th>
-				<td>umartin025@ikasle.ehu.eus</th>
-			</tr>
-		</tbody>
-	</table>
-	<center>
-	<br>
-	<h2>Taldeburua:</h2>
-	<p>Surya Ortega Aguirre</p>
-	<p>sortega024@ikasle.ehu.eus</p>
-	</center>
-	</body>
-	</html>'
-	echo "$index" > index.html
-	sudo mv index.html /var/www/html
-	firefox http://127.0.0.1/index.html &
+echo -e "dnjads"
 }
 
 #14. Ariketa
@@ -269,7 +211,25 @@ function jabetasunaetabaimenakEzarri()
 #18. Ariketa
 function flaskaplikazioarentzakosystemdzerbitzuaSortu()
 {
-echo -e " Formulariocitas\n"
+    FITXATEGIA="/etc/systemd/system/formulariocitas.service"
+    
+     sudo tee "$FITXATEGIA" > /dev/null <<EOF
+	[Unit]
+	Description=Gunicorn instance to serve formulariocitas
+	After=network.target
+	[Service]
+	User=www-data
+	Group=www-data
+	WorkingDirectory=/var/www/formulariocitas
+	Environment="PATH=/var/www/formulariocitas/venv/bin"
+	ExecStart=/var/www/formulariocitas/venv/bin/gunicorn --bind 127.0.0.1:5000 wsgi:app
+	[Install]
+	WantedBy=multi-user.target
+EOF
+	
+    sudo systemctl daemon-reload
+    sudo systemctl enable formulariocitas.service
+    sudo systemctl start formulariocitas.service
 }
 
 #19. Ariketa
