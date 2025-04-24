@@ -157,6 +157,95 @@ function indexIkusi()
 	firefox http://127.0.0.1 &
 }
 
+function indexPertsonalizatu
+{
+	index='<!DOCTYPE html>
+	<html>
+	<head>
+	<title>GL2-ko bakarrak</title>
+	</head>
+	<body>
+	<center>
+	<h1>Taldea: GL2-ko bakarrak</h1>
+	<br>
+	<h2>Azpitaldea: Astearteak</h2>
+	</center>
+	<br>
+	<table border="2" align="center">
+		<thead>
+			<tr>
+				<th>Izena</th>
+				<th>Abizenak</th>
+				<th>Posta elektronikoa</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Surya</th>
+				<td>Ortega Aguirre</th>
+				<td>sortega024@ikasle.ehu.eus</th>
+			</tr>
+			<tr>
+				<td>Gaizka</th>
+				<td>Divasson Jaureguibarria</th>
+				<td>gdivasson001@ikasle.ehu.eus</th>
+			</tr> 
+			<tr>
+				<td>Asier</th>
+				<td>Barrio Borge</th>
+				<td>abarrio028@ikasle.ehu.eus</th>
+			</tr>
+			<tr>
+				<td>Asier</th>
+				<td>Las Hayas Fernández</th>
+				<td>alashayas001@ikasle.ehu.eus</th>
+			</tr>
+			<tr>
+				<td>Uriel</th>
+				<td>Martin Pulido</th>
+				<td>umartin025@ikasle.ehu.eus</th>
+			</tr>
+		</tbody>
+	</table>
+	<center>
+	<br>
+	<h2>Taldeburua:</h2>
+	<p>Surya Ortega Aguirre</p>
+	<p>sortega024@ikasle.ehu.eus</p>
+	</center>
+	</body>
+	</html>'
+	echo "$index" > index.html
+	sudo mv index.html /var/www/html
+	firefox http://127.0.0.1/index.html &
+}
+
+function gunicornInstalatu()
+{
+	if pip list | grep -q gunicorn
+	then 
+		echo -e "Instalatuta dagoeneko \n"
+	else
+		source /var/www/formulariocitas/venv/bin/activate
+		pip install gunicorn
+	fi
+}
+
+function gunicornKonfiguratu
+{
+	if ! ls -lias | grep wsgi.py
+	then 
+		wsgi='from app import app 
+			if __name__ == "__main__":
+   				app.run()'
+		echo "$wsgi" > wsgi.py
+	fi
+	source /var/www/formulariocitas/venv/bin/activate
+	/var/www/formulariocitas$ gunicorn --bind 127.0.0.1:5000 wsgi:app
+	firefox http://127.0.0.1:5000 &
+
+}
+
 function menutikIrten()
 {
 echo "Instalatzailearen bukaera"
@@ -180,6 +269,9 @@ do
     echo -e "11 nginx martxan jarri \n"
     echo -e "12 nginx ataka testeatu \n"
     echo -e "13 idex ikusi \n"
+    echo -e "14 index pertsonalizatu \n"
+    echo -e "15 Gunicron instalatu \n"
+    echo -e "16 Gunicron konfiguratu \n"
     echo -e "26 Menutik irten \n"
     	read -p "Ze aukera egin nahi duzu?" opcionmenuppal
     case $opcionmenuppal in
@@ -197,9 +289,11 @@ do
    	 11) nginxMatxanJarri;;
    	 12) nginxatakaTesteatu;;
    	 13) indexIkusi;;
+   	 14) indexPertsonalizatu;;
+   	 15) gunicornInstalatu;;
    	 26) menutikIrten;;
+   	 16) gunicornKonfiguratu;;
    	 *) ;;
     esac
 done
 exit 0
-
