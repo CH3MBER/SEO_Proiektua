@@ -41,11 +41,11 @@ function prioektufitxategiakkokapenberrianKopiatu()
 {
 	if [ ! -f "formulariocitas.tar.gz" ] 
 	then
-		echo "artxiboa ez da existitzen..."
+		echo -e "artxiboa ez da existitzen..."
 		return 1
 	else 
 		tar -xzvf formulariocitas.tar.gz -C /var/www/formulariocitas
-		echo "Artxiboa deskomprimitu da..."
+		echo -e "Artxiboa deskomprimitu da..."
 	fi
 }
 
@@ -53,18 +53,18 @@ function mysqlInstalatu()
 {
 	if  dpkg -l | grep -q mysql-server 
 	then 
-		echo "Instalatuta dago \n"
+		echo -e "Instalatuta dago \n"
 	else 
 		sudo apt update
 		sudo apt install mysql-server
-		echo "Instalatu egin da \n"
+		echo -e "Instalatu egin da \n"
 	fi
 	
 	if  ! systemctl is-active --quiet mysql
 	then 
 		sudo systemctl start mysql.service
 	fi
-	echo "Abiarazita dago \n"
+	echo -e "Abiarazita dago \n"
 }
 
 function datubasekoerabiltzaileaSortu()
@@ -77,7 +77,7 @@ function datubasekoerabiltzaileaSortu()
 		echo "Erabiltzailea sortuta \n"
 		sudo mysql < "datubasekoerabiltzaileasortu.sql"
 	else
-		echo "Erabiltzailea sortuta dago dagoeneko \n"
+		echo -e "Erabiltzailea sortuta dago dagoeneko \n"
 	fi
 		
 }
@@ -85,7 +85,7 @@ function datubasekoerabiltzaileaSortu()
 function datubaseaSortu()
 {
 	sudo mysql -u lsi -p < "/var/www/formulariocitas/script.sql"
-	echo "Sortu da taula \n"
+	echo -e "Sortu da taula \n"
 }
 
 function ingurunebirtualaSortu() 
@@ -96,7 +96,65 @@ function ingurunebirtualaSortu()
 	sudo apt install -y python3-pip
 	python3 -m venv /var/www/formulariocitas/venv
 	source /var/www/formulariocitas/venv/bin/activate
-	echo "Instalatu egin da guztia \n"
+	echo -e "Instalatu egin da guztia \n"
+}
+
+function ingurunebirtualeanliburutegiakInstalatu()
+{
+	source /var/www/formulariocitas/venv/bin/activate
+	sudo apt install -y python3-pip
+	pip install -r requirements.txt
+	echo -e "Liburutegiak instalatu dira \n"
+}
+
+function flaskekozerbirariarekindenaProbatu()
+{
+	source /var/www/formulariocitas/venv/bin/activate
+	if ls -lias | grep app.py
+	then
+		python3 app.py &
+		firefox http://127.0.0.1:5000/ &
+	else 
+		echo -e "\napp.py ez da existitzen \n"
+	fi
+	
+}
+
+function nginxInstalatu()
+{
+	if dpkg -s | grep -q nginx
+	then
+		echo -e "\nInstalatuta dago dagoeneko \n"
+	else 
+		sudo apt update
+		sudo apt install nginx
+	fi
+}
+
+function nginxMatxanJarri()
+{
+	if systemctl is-active -q nginx
+	then
+		echo -e "\nAktibatuta dagoeneko\n"
+	else
+		sudo systemctl start nginx
+		echo -e "\nAktibatu egin da \n"
+	fi 
+		
+}
+
+function nginxatakaTesteatu()
+{
+	if ! dpkg -s | grep -q net-tools
+	then 
+		sudo apt install net-tools
+	fi
+	sudo netstat -tulnp | grep nginx
+}
+
+function indexIkusi()
+{
+	firefox http://127.0.0.1 &
 }
 
 function menutikIrten()
@@ -116,17 +174,29 @@ do
     echo -e "5 Datubaseko erabiltzailea sortu \n" 
     echo -e "6 Datu basea sortu \n"
     echo -e "7 Ingurune birtuala sortu \n"
+    echo -e "8 Ingurune birtualean liburutegiak instalatu \n"
+    echo -e "9 Flaskeko zerbitzariarekin dena probatu \n"
+    echo -e "10 nginx instalatu \n"
+    echo -e "11 nginx martxan jarri \n"
+    echo -e "12 nginx ataka testeatu \n"
+    echo -e "13 idex ikusi \n"
     echo -e "26 Menutik irten \n"
     	read -p "Ze aukera egin nahi duzu?" opcionmenuppal
     case $opcionmenuppal in
-        	0) proiektufitxategiakPaketatuetaKonprimitu;;
-        	1) mysqlKendu;;
+         0) proiektufitxategiakPaketatuetaKonprimitu;;
+         1) mysqlKendu;;
    	 2) kokapenberriaSortu;;
    	 3) prioektufitxategiakkokapenberrianKopiatu;;
    	 4) mysqlInstalatu;;
    	 5) datubasekoerabiltzaileaSortu;;
    	 6) datubaseaSortu;;
    	 7) ingurunebirtualaSortu;;
+   	 8) ingurunebirtualeanliburutegiakInstalatu;;
+   	 9) flaskekozerbirariarekindenaProbatu;;
+   	 10) nginxInstalatu;;
+   	 11) nginxMatxanJarri;;
+   	 12) nginxatakaTesteatu;;
+   	 13) indexIkusi;;
    	 26) menutikIrten;;
    	 *) ;;
     esac
