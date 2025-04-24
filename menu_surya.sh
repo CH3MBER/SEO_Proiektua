@@ -95,7 +95,7 @@ function ingurunebirtualaSortu()
 	sudo apt install python3-venv
 	sudo apt install -y python3-pip
 	python3 -m venv /var/www/formulariocitas/venv
-	source /var/www/formulariocitas/vvenv/bin/activate
+	source /var/www/formulariocitas/venv/bin/activate
 	echo "Instalatu egin da guztia \n"
 }
 
