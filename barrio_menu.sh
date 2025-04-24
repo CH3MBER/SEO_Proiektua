@@ -1,9 +1,12 @@
 #!/usr/bin/bash
+#0. Ariketa
 function proiektufitxategiakPaketatuetaKonprimitu()
 {
   cd /home/$USER/formulariocitas
   tar cvzf  /home/$USER/formulariocitas.tar.gz app.py script.sql  .env requirements.txt templates/*
 }
+
+#1. Ariketa
 function mysqlKendu()
 {
 #Zerbitzua gelditu
@@ -22,6 +25,7 @@ sudo rm -rf /etc/mysql/
 sudo rm -rf /var/log/mysql
 }
 
+#2. Ariketa
 function kokapenberriaSortu()
 {
     if [ -d /var/www/formulario ]
@@ -36,6 +40,8 @@ function kokapenberriaSortu()
     echo ""
     read -p "PULSA ENTER PARA CONTINUAR..."
 }
+
+#3. Ariketa
 function proiektufitxategiakkokapenberrianKopiatu()
 {
     if [ -e /home/$USER/formulariocitas.tar.gz ] 
@@ -47,10 +53,14 @@ function proiektufitxategiakkokapenberrianKopiatu()
     fi
     read -p "PULSA ENTER PARA CONTINUAR..."
 }
+
+#4. Ariketa
 function mysqlInstalatu()
 {
 echo -e " Blablabla" 
 }
+
+#5. Ariketa
 function datubasekoerabiltzaileaSortu()
 {
    SQL_SCRIPT="$HOME/datubasekoerabiltzaileasortu.sql"
@@ -63,11 +73,15 @@ function datubasekoerabiltzaileaSortu()
     echo "Exekutatzen: sudo mysql < $SQL_SCRIPT"
     sudo mysql < "$SQL_SCRIPT"
 }
+
+#6. Ariketa
 function datubaseaSortu()
 {
     sudo mysql -u lsi -p < /var/www/formulariocitas/script.sql
     #konprobaketa sar daiteke
 }
+
+#7.Ariketa
 function ingurunebirtualaSortu()
 {
     declare -a lista_paquetes
@@ -89,6 +103,8 @@ function ingurunebirtualaSortu()
     echo ""
     read -p "PULSA ENTER PARA CONTINUAR..."
 }
+
+#8. Ariketa
 function ingurunebirtualeanliburutegiakInstalatu()
 {
     cd /var/www/formulariocitas
@@ -100,10 +116,14 @@ function ingurunebirtualeanliburutegiakInstalatu()
     echo ""
     read -p "PULSA ENTER PARA CONTINUAR..."
 }
+
+#9. Ariketa
 function flaskekozerbirariarekindenaProbatu()
 {
 echo -e " Formulariocitas\n"
 }
+
+#10. Ariketa
 function nginxInstalatu()
 {
     aux=$(sudo dpkg -s nginx | grep "Status: install ok installed")
@@ -116,23 +136,100 @@ function nginxInstalatu()
     	echo ""
     read -p "PULSA ENTER PARA CONTINUAR..."
 }
+
+#11. Ariketa
 function nginxMatxanJarri()
 {
-echo -e " Formulariocitas\n"
-#Aqui habria que combrobar si esta activo, usando systemctl y supongo que grep tambien
+    if systemctl is-active -q nginx
+    then
+    	echo -e "Aktibatuta dagoeneko\n"
+    else
+    	sudo systemctl start nginx
+    	echo -e "Aktibatu da\n"
+    fi
 }
+
+#12. Ariketa
 function nginxatakaTesteatu()
 {
-echo -e " Formulariocitas\n"
+    aux=$(sudo dpkg net-tools | grep "Status: install ok installed")
+    if [ -z "$aux" ]; then
+	sudo apt install net-tools
+    fi
+    sudo netstat -tulnp | grep nginx
 }
+
+#13. Ariketa
 function indexIkusi()
 {
-echo -e " Formulariocitas\n"
+	index='<!DOCTYPE html>
+	<html>
+	<head>
+	<title>GL2-ko bakarrak</title>
+	</head>
+	<body>
+	<center>
+	<h1>Taldea: GL2-ko bakarrak</h1>
+	<br>
+	<h2>Azpitaldea: Astearteak</h2>
+	</center>
+	<br>
+	<table border="2" align="center">
+		<thead>
+			<tr>
+				<th>Izena</th>
+				<th>Abizenak</th>
+				<th>Posta elektronikoa</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Surya</th>
+				<td>Ortega Aguirre</th>
+				<td>sortega024@ikasle.ehu.eus</th>
+			</tr>
+			<tr>
+				<td>Gaizka</th>
+				<td>Divasson Jaureguibarria</th>
+				<td>gdivasson001@ikasle.ehu.eus</th>
+			</tr> 
+			<tr>
+				<td>Asier</th>
+				<td>Barrio Borge</th>
+				<td>abarrio028@ikasle.ehu.eus</th>
+			</tr>
+			<tr>
+				<td>Asier</th>
+				<td>Las Hayas Fernández</th>
+				<td>alashayas001@ikasle.ehu.eus</th>
+			</tr>
+			<tr>
+				<td>Uriel</th>
+				<td>Martin Pulido</th>
+				<td>umartin025@ikasle.ehu.eus</th>
+			</tr>
+		</tbody>
+	</table>
+	<center>
+	<br>
+	<h2>Taldeburua:</h2>
+	<p>Surya Ortega Aguirre</p>
+	<p>sortega024@ikasle.ehu.eus</p>
+	</center>
+	</body>
+	</html>'
+	echo "$index" > index.html
+	sudo mv index.html /var/www/html
+	firefox http://127.0.0.1/index.html &
 }
+
+#14. Ariketa
 function indexPertsonalizatu()
 {
 echo -e " Formulariocitas\n"
 }
+
+#15. Ariketa
 function gunicornInstalatu()
 {
     cd /var/www/formulariocitas
@@ -146,36 +243,62 @@ function gunicornInstalatu()
     echo ""
     read -p "PULSA ENTER PARA CONTINUAR..."
 }
+
+#16. Ariketa
 function gunicornKonfiguratu()
 {
 echo -e " Formulariocitas\n"
 }
+
+#17. Ariketa
 function jabetasunaetabaimenakEzarri()
 {
-echo -e " Formulariocitas\n"
+    PROIEKTUA="/var/www/formulariocitas"
+    
+    if [ ! -d "$PROIEKTUA" ]; then
+    	echo -e "'$PROIEKTUA' karpeta ez da existitzen"
+    	return 1
+    fi
+    
+    sudo chown -R www-data:www-data "$PROIEKTUA"
+    sudo find "$PROIEKTUA" -type d -exec chmod 755 {} \;
+    sudo find "$PROIEKTUA" -type f -exec chmod 644 {} \;
+
 }
+
+#18. Ariketa
 function flaskaplikazioarentzakosystemdzerbitzuaSortu()
 {
 echo -e " Formulariocitas\n"
 }
+
+#19. Ariketa
 function nginxenatakaAldatu()
 {
 echo -e " Formulariocitas\n"
 }
+
+#20. Ariketa
 function nginxkonfiguraziofitxategiakKargatu()
 {
     echo "NGINX konfigurazio-aldaketak kargatzen..."
     sudo systemctl reload nginx
 }
+
+#21. Ariketa
 function nginxBerrabiarazi()
 {
     echo "NGINX web zerbitzua berrabiarazten..."
     sudo systemctl restart nginx
 }
+
+#22. Ariketa
 function hostbirtualaProbatu()
 {
 echo -e " Formulariocitas\n"
 }
+
+#23. Ariketa
 function nginxlogakIkuskatu()
 {
     LOGFILE="/var/log/nginx/error.log"
@@ -187,14 +310,20 @@ function nginxlogakIkuskatu()
         echo "Errorea: $LOGFILE ez da existitzen."
     fi
 }
+
+#24. Ariketa
 function ekoizpenzerbitzarianKopiatu()
 {
 echo -e " Formulariocitas\n"
 }
+
+#25. Ariketa
 function sshkonexiosaiakerakKontrolatu()
 {
 echo -e " Formulariocitas\n"
 }
+
+#26. Ariketa
 function menutikIrten()
 {
 echo "Instalatzailearen bukaera"
