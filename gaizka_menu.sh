@@ -205,6 +205,82 @@ function gunicornInstalatu()
  fi
 }
 
+#16. Ariketa
+function gunicornKonfiguratu()
+{
+ cd /var/www/formulariocitas
+ kodea='from app import app\nif __name__ == "__main__":\n\tapp.run()'
+ echo -e $kodea > wsgi.py
+ source venv/bin/activate
+ gunicorn --bind 127.0.0.1:5000 wsgi:app &
+ firefox http://127.0.0.1:5000
+}
+
+#17. Ariketa
+function jabetasunaetabaimenakEzarri()
+{
+ sudo chmod -R 755 /var/www/formulariocitas 
+ sudo chmod 600 /var/www/formulariocitas/.env
+ sudo chmod 600 /var/www/formulariocitas/app.py
+ sudo chown -R www-data:www-data /var/www/formulariocitas
+}
+
+#18. Ariketa
+function flaskaplikazioarentzakosystemdzerbitzuaSortu()
+{
+ kodea='[Unit]\n
+ Description=Gunicorn instance to serve Flask\n
+ After=network.target\n
+ \n
+ [Service]\n
+ User=www-data\n
+ Group=www-data\n
+ WorkingDirectory=/var/www/formulariocitas\n
+ Environment="PATH=/var/www/formulariocitas/venv/bin"\n
+ ExecStart=/var/www/formulariocitas/venv/bin/gunicorn --bind 127.0.0.1:5000 wsgi:app\n
+ Restart=always\n
+ \n
+ [Install]\n
+ WantedBy=multi-user.target\n'
+ echo -e "$kodea" | sudo tee /etc/systemd/system/formulariocitas.service > /dev/null
+ sudo systemctl daemon-reload 
+ sudo systemctl start formulariocitas 
+ sudo systemctl enable formulariocitas
+ systemctl status formulariocitas
+}
+
+#19. Ariketa
+function nginxenatakaAldatu()
+{
+ kodea='server {listen 3128;server_name localhost;location / {include proxy_params;proxy_pass  http://127.0.0.1:5000;}}'
+ echo "$kodea" | sudo tee /etc/nginx/conf.d/formulariocitas.conf > /dev/null
+ sudo nginx -t
+}
+
+#20. Ariketa
+function nginxkonfiguraziofitxategiakKargatu()
+{
+ sudo systemctl reload nginx
+}
+
+#21. Ariketa
+function nginxBerrabiarazi()
+{
+ sudo systemctl restart nginx
+}
+
+#22. Ariketa
+function hostbirtualaProbatu()
+{
+ xdg-open http://127.0.0.1:3128
+}
+
+#23. Ariketa
+function nginxlogakIkuskatu() 
+{
+ tail /var/log/nginx/error.log
+}
+
 #26. Ariketa
 function menutikIrten()
 {
@@ -232,6 +308,14 @@ do
     echo -e "13 Index ikusi \n"
     echo -e "14 Index pertsonalizatu \n"
     echo -e "15 Gunicorn instalatu \n"
+    echo -e "16 Gunicorn konfiguratu \n"
+    echo -e "17 Jabetasuna eta baimenak ezarri \n"
+    echo -e "18 Flask aplikazioarentzako systemd zerbitzua sortu \n"
+    echo -e "19 Nginxen ataka aldatu \n"
+    echo -e "20 Nginx konfigurazio fitxategiak kargatu \n"
+    echo -e "21 Nginx berrabiarazi \n"
+    echo -e "22 Host birtuala probatu \n"
+    echo -e "23 Nginx logak ikuskatu \n"
     echo -e "26 Menutik irten \n"
     	read -p "Ze aukera egin nahi duzu?" opcionmenuppal
     case $opcionmenuppal in
@@ -251,6 +335,14 @@ do
    		13) indexIkusi;;
    		14) indexPertsonalizatu;;
    		15) gunicornInstalatu;;
+   		16) gunicornKonfiguratu;;
+   		17) jabetasunaetabaimenakEzarri;;
+   		18) flaskaplikazioarentzakosystemdzerbitzuaSortu;;
+   		19) nginxenatakaAldatu;;
+   		20) nginxkonfiguraziofitxategiakKargatu;;
+   		21) nginxBerrabiarazi;;
+   		22) hostbirtualaProbatu;;
+   		23) nginxlogakIkuskatu;;
    	 	26) menutikIrten;;
    	 	*) ;;
     esac
