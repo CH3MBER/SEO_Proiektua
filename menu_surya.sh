@@ -233,7 +233,7 @@ function gunicornInstalatu()
 
 function gunicornKonfiguratu
 {
-	if ! ls -lias | grep wsgi.py
+	if ! ls -lias | grep -q wsgi.py
 	then 
 		wsgi='from app import app 
 			if __name__ == "__main__":
@@ -244,6 +244,40 @@ function gunicornKonfiguratu
 	/var/www/formulariocitas$ gunicorn --bind 127.0.0.1:5000 wsgi:app
 	firefox http://127.0.0.1:5000 &
 
+}
+
+function jabetasunaetabaimenakEzzarri()
+{
+	sudo chmod -R 755 /var/www/formulariocitas
+	sudo chmod 600 /var/www/formulariocitas/.env
+	sudo chmod 600 /var/www/formulariocitas/app.py
+	sudo chown -R www-data:www-data /var/www/formulariocitas
+	echo -e "Baimenak eta jabetzak aldatuta \n"
+}
+
+function flaskaplikazioarentzakosystemdzerbitzuaSortu()
+{
+	service='[Unit]
+	Description=Gunicorn instance to serve formulariocitas
+	After=network.target
+	[Service]
+	User=www-data
+	Group=www-data
+	WorkingDirectory=/var/www/formulariocitas
+	Environment="PATH=/var/www/formulariocitas/venv/bin"
+	ExecStart=/var/www/formulariocitas/venv/bin/gunicorn --bind 127.0.0.1:5000 wsgi:app
+	[Install]
+	WantedBy=multi-user.target
+	'
+	echo "$service" | sudo tee /etc/systemd/system/formulariocitas.service > /dev/null
+	sudo systemctl daemon-reload
+	if systemctl status formulariocitas.service | grep -q active
+	then 
+		echo -e "Aktbatuta dago \n"
+	else 
+		sudo systemctl enable formulariocitas.service	
+		echo -e "Aktibatu egin da \n"
+	fi
 }
 
 function menutikIrten()
@@ -272,6 +306,8 @@ do
     echo -e "14 index pertsonalizatu \n"
     echo -e "15 Gunicron instalatu \n"
     echo -e "16 Gunicron konfiguratu \n"
+    echo -e "17 Jabetasuna eta baimenak ezarri \n"
+    echo -e "18 Flask aplikazioarentzako systemd zerbitzua sortu \n"
     echo -e "26 Menutik irten \n"
     	read -p "Ze aukera egin nahi duzu?" opcionmenuppal
     case $opcionmenuppal in
@@ -291,8 +327,10 @@ do
    	 13) indexIkusi;;
    	 14) indexPertsonalizatu;;
    	 15) gunicornInstalatu;;
-   	 26) menutikIrten;;
    	 16) gunicornKonfiguratu;;
+   	 17) jabetasunaetabaimenakEzzarri;;
+   	 18) flaskaplikazioarentzakosystemdzerbitzuaSortu;;
+   	 26) menutikIrten;;
    	 *) ;;
     esac
 done
