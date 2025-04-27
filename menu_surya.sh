@@ -280,6 +280,53 @@ function flaskaplikazioarentzakosystemdzerbitzuaSortu()
 	fi
 }
 
+function nginxenatakaAldatu()
+{
+	conf='
+	
+		server {
+    				listen 3128;
+				server_name localhost;
+	    		location / {
+	        		include proxy_params;
+	        		proxy_pass  http://127.0.0.1:5000;
+	    		}
+		}
+	
+	'
+	echo "$conf" | sudo tee /etc/nginx/conf.d/formulariocitas.conf > /dev/null
+	
+	echo -e "Artxiboa sortu egin da. \n"
+	
+	#sudo nginx -c /etc/nginx/conf.d/formulariocitas.conf -t
+	sudo nginx -t &> /dev/null
+	if [ $? -eq 0 ]
+	then
+		echo -e "Ez dago sintaxi errorerik \n"
+	else
+		echo -e "Sintaxi errorea detektatuta \n"
+	fi
+		
+}
+
+function nginxkonfiguraziofitxategiakKargatu()
+{
+	sudo systemctl restart nginx
+	echo -e "Kargatu dira aldaketa berriak \n"
+}
+
+function nginxBerrabirazi()
+{
+	sudo systemctl reload nginx
+	echo -e "Berrabirazi egin da \n"
+}
+
+function hostbirtualaProbatu()
+{
+	firefox http://127.0.0.1:3128/ &
+}
+
+
 function menutikIrten()
 {
 echo "Instalatzailearen bukaera"
@@ -308,6 +355,10 @@ do
     echo -e "16 Gunicron konfiguratu \n"
     echo -e "17 Jabetasuna eta baimenak ezarri \n"
     echo -e "18 Flask aplikazioarentzako systemd zerbitzua sortu \n"
+    echo -e "19 Nginx-en ataka aldatu \n"
+    echo -e "20 Nginx konfigurazio fitxategia kargatu \n"
+    echo -e "21 Nginx berrabirazi \n"
+    echo -e "22 Host birtuala probatu \n"
     echo -e "26 Menutik irten \n"
     	read -p "Ze aukera egin nahi duzu?" opcionmenuppal
     case $opcionmenuppal in
@@ -330,6 +381,10 @@ do
    	 16) gunicornKonfiguratu;;
    	 17) jabetasunaetabaimenakEzzarri;;
    	 18) flaskaplikazioarentzakosystemdzerbitzuaSortu;;
+   	 19) nginxenatakaAldatu;;
+   	 20) nginxkonfiguraziofitxategiakKargatu;;
+   	 21) nginxBerrabirazi;;
+   	 22) hostbirtualaProbatu;;
    	 26) menutikIrten;;
    	 *) ;;
     esac
