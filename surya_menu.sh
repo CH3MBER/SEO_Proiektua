@@ -157,7 +157,7 @@ function indexIkusi()
 	firefox http://127.0.0.1 &
 }
 
-function indexPertsonalizatu
+function indexPertsonalizatu()
 {
 	index='<!DOCTYPE html>
 	<html>
@@ -231,7 +231,7 @@ function gunicornInstalatu()
 	fi
 }
 
-function gunicornKonfiguratu
+function gunicornKonfiguratu()
 {
 	if ! ls -lias | grep -q wsgi.py
 	then 
@@ -241,7 +241,7 @@ function gunicornKonfiguratu
 		echo "$wsgi" > wsgi.py
 	fi
 	source /var/www/formulariocitas/venv/bin/activate
-	/var/www/formulariocitas$ gunicorn --bind 127.0.0.1:5000 wsgi:app
+	/var/www/formulariocitas gunicorn --bind 127.0.0.1:5000 wsgi:app
 	firefox http://127.0.0.1:5000 &
 
 }
@@ -326,6 +326,34 @@ function hostbirtualaProbatu()
 	firefox http://127.0.0.1:3128/ &
 }
 
+function nginxlogakIkuskatu()
+{
+	less /var/log/nginx/error.log
+}
+
+function ekoizpenzerbitzarianKopiatu()
+{
+	if ! dpkg -s  | grep -q openssh-server 
+	then 
+		sudo apt update 
+		sudo apt install openssh-server
+		echo -e "Instalatu egin da \n"
+	else
+		echo -e "Instalatuta dagoeneko \n"
+	fi
+	
+	if systemctl status ssh | grep -q active
+	then 
+		echo -e "Dagoeneko aktibatuta \n"
+	else 
+		sudo systemctl enable ssh
+		echo -e "Aktibatu egin da \n"
+	fi
+	
+	ip -br address
+	
+	
+}
 
 function menutikIrten()
 {
@@ -359,6 +387,8 @@ do
     echo -e "20 Nginx konfigurazio fitxategia kargatu \n"
     echo -e "21 Nginx berrabirazi \n"
     echo -e "22 Host birtuala probatu \n"
+    echo -e "23 Nginx logal iksutatu \n"
+    echo -e "24 Ekopizpen zerbitzarian kopiatu \n"
     echo -e "26 Menutik irten \n"
     	read -p "Ze aukera egin nahi duzu?" opcionmenuppal
     case $opcionmenuppal in
@@ -385,6 +415,8 @@ do
    	 20) nginxkonfiguraziofitxategiakKargatu;;
    	 21) nginxBerrabirazi;;
    	 22) hostbirtualaProbatu;;
+   	 23) nginxlogakIkuskatu;;
+   	 24) ekoizpenzerbitzarianKopiatu;;
    	 26) menutikIrten;;
    	 *) ;;
     esac
