@@ -354,11 +354,16 @@ function ekoizpenzerbitzarianKopiatu()
 	read -p "Idatzi ip helbidea  " ip
 	read -p "Idatzi erabiltzailea  " erabiltzailea
 	
+	if [[ ! -f menu.sh || -z $(ls *.tar.gz 2>/dev/null) ]]; then
+		echo -e "Ez dago .tar.gz edo menu.sh fitxategirik. \n"
+		return 1
+	fi
+	
 	scp menu.sh *.tar.gz $erabiltzailea@$ip:~
 	
 	ssh $erabiltzailea@$ip "bash -x menu.sh"
 	
-	exit
+	echo -e "Exekuzioa egin da. Komprobatzeko sartu http://$ip:3128\n"
 	
 	
 	
