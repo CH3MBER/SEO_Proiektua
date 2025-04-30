@@ -333,28 +333,37 @@ function nginxlogakIkuskatu()
 
 function ekoizpenzerbitzarianKopiatu()
 {
-	if ! dpkg -s  | grep -q openssh-server 
+	if ! dpkg -s openssh-server &>/dev/null
 	then 
 		sudo apt update 
-		sudo apt install openssh-server
+		sudo apt install openssh-server -y
 		echo -e "Instalatu egin da \n"
 	else
 		echo -e "Instalatuta dagoeneko \n"
 	fi
 	
-	if systemctl status ssh | grep -q active
+	if systemctl is-active -q ssh
 	then 
 		echo -e "Dagoeneko aktibatuta \n"
 	else 
 		sudo systemctl enable ssh
+		sudo systemctl start ssh
 		echo -e "Aktibatu egin da \n"
 	fi
 	
-	ip -br address
+	read -p "Idatzi ip helbidea  " ip
+	read -p "Idatzi erabiltzailea  " erabiltzailea
+	
+	scp menu.sh *.tar.gz $erabiltzailea@$ip:~
+	
+	ssh $erabiltzailea@$ip "bash -x menu.sh"
+	
+	exit
+	
 	
 	
 }
-
+# 54 or 7. aurkezpenean
 function menutikIrten()
 {
 echo "Instalatzailearen bukaera"
