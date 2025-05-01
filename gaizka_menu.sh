@@ -157,27 +157,27 @@ function indexPertsonalizatu()
     <tr>
         <th>Izena</th>
         <th>Abizenak</th>
-        <th>Argazkia</th>
+        <th>Posta elektronikoa</th>
     </tr>
      <tr>
         <td>Surya</th>
         <td>Ortega</th>
-        <td border=3 height=100 width=100>Photo1</th>
+        <td border=3 height=100 width=100>surya@gmail.com</th>
     </tr>
     <tr>
         <td>Gaizka</th>
         <td>Divasson</th>
-        <td border=3 height=100 width=100>Photo2</th>
+        <td border=3 height=100 width=100>gaizka@gmail.com</th>
     </tr>
     <tr>
         <td>Asier</th>
         <td>Barrio</th>
-        <td border=3 height=100 width=100>Photo3</th>
+        <td border=3 height=100 width=100>asierb@gmail.com</th>
     </tr>
     <tr>
         <td>Asier</th>
         <td>LasHayas</th>
-        <td border=3 height=100 width=100>Photo4</th>
+        <td border=3 height=100 width=100>asierl@gmail.com</th>
     </tr>
 </table>
 <center>
@@ -281,6 +281,39 @@ function nginxlogakIkuskatu()
  tail /var/log/nginx/error.log
 }
 
+#24. Ariketa
+function ekoizpenzerbitzarianKopiatu()
+{
+ if command -v sshd &> /dev/null;
+ then
+    echo -e " " 
+    echo -e "=====ERROR===== Ssh instalatuta dago dagoeneko =====ERROR===== \n"
+ else
+    sudo apt install openssh-server
+ fi
+ 
+ if systemctl is-active --quiet ssh
+ then
+    echo -e "=====ERROR===== Ssh piztuta dago dagoeneko =====ERROR===== \n"
+ else
+    systemctl start ssh
+ fi
+ 
+ read -p "Sartu zerbitzariaren IP-a: " ZERB_IP
+ 
+ scp /home/$USER/formulariocitas.tar.gz menu.sh "$USER@$ZERB_IP:/home/$USER/"
+ 
+ ssh $USER @ $ip
+ 
+ bash -x menu.sh #Scripta "debug" moduan exekutatu?
+}
+
+#25. Ariketa
+function sshkonexiosaiakerakKontrolatu()
+{
+ less /var/log/auth.log | grep "sshd"
+}
+
 #26. Ariketa
 function menutikIrten()
 {
@@ -316,6 +349,8 @@ do
     echo -e "21 Nginx berrabiarazi \n"
     echo -e "22 Host birtuala probatu \n"
     echo -e "23 Nginx logak ikuskatu \n"
+    echo -e "24 Ekoizpen zerbitzarian kopiatu \n"
+    echo -e "25 Ssh konexio saiakerak kontrolatu \n"
     echo -e "26 Menutik irten \n"
     	read -p "Ze aukera egin nahi duzu?" opcionmenuppal
     case $opcionmenuppal in
@@ -343,6 +378,8 @@ do
    		21) nginxBerrabiarazi;;
    		22) hostbirtualaProbatu;;
    		23) nginxlogakIkuskatu;;
+   		24) ekoizpenzerbitzarianKopiatu;;
+   		25) sshkonexiosaiakerakKontrolatu;;
    	 	26) menutikIrten;;
    	 	*) ;;
     esac
