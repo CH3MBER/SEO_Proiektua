@@ -368,6 +368,30 @@ function ekoizpenzerbitzarianKopiatu()
 	
 	
 }
+function sshkonexiosaiakerakKontrolatu()
+{	
+	hilea=$(date +"%Y-%m")
+	(zcat /var/log/auth.log*.gz; cat /var/log/auth.log*) | grep sshd | grep password | grep ^$hilea> loggak.txt
+
+	echo -e "Konexio saiakerak ssh bidez hile, aste eta egun honetan: \n"
+	while read -r linea
+	do
+		if echo "$linea" | grep -q "Failed"
+		then
+			egoera='Fail'
+		else
+			egoera='Accept'
+		fi
+		erabiltzailea=$(echo "$linea" | sed -n 's/.* \([[:alnum:]_]*\) from.*/\1/p')
+		data=$(echo "$linea" | awk '{print $1}' | cut -d'T' -f1)
+		ordua=$(echo "$linea" | awk '{print $1}' | cut -d'T' -f2 | cut -d'.' -f1)
+		echo -e "Status: $egoera    Account name: $erabiltzailea    Date: $data $ordua \n"
+	done < loggak.txt
+	
+	rm loggak.txt
+	
+}
+
 # 54 or 7. aurkezpenean
 function menutikIrten()
 {
@@ -403,6 +427,7 @@ do
     echo -e "22 Host birtuala probatu \n"
     echo -e "23 Nginx logal iksutatu \n"
     echo -e "24 Ekopizpen zerbitzarian kopiatu \n"
+    echo -e "25 SSH konexio saiakerak kontrolatu \n"
     echo -e "26 Menutik irten \n"
     	read -p "Ze aukera egin nahi duzu?" opcionmenuppal
     case $opcionmenuppal in
@@ -431,6 +456,7 @@ do
    	 22) hostbirtualaProbatu;;
    	 23) nginxlogakIkuskatu;;
    	 24) ekoizpenzerbitzarianKopiatu;;
+   	 25) sshkonexiosaiakerakKontrolatu;;
    	 26) menutikIrten;;
    	 *) ;;
     esac
