@@ -438,19 +438,50 @@ function ekoizpenzerbitzarianKopiatu()
 function sshkonexiosaiakerakKontrolatu()
 {
     cat /var/log/auth.log > auth.log.txt
+    zcat /var/log/auth.log* >> auth.log.txt
     less auth.log.txt | tr -s ' ' '@' > auth.log.ilarazka.txt
     txarto="Failed@password"
     ondo="Accepted@password"
     echo -e "Konexio saiakerak gaur, aste honetan eta hilabete honetan hauek izan dira:\n"
     echo -e "____________________________\n"
-    for linea in `less auth.log.ilarazka.txt | grep $txarto`
+    for linea in `less auth.log.ilarazka.txt | grep -E "$ondo|$txarto"`
     do
-	erabiltzailea=`echo $linea | cut -d@ -f15`
-	agindua=`echo $linea | cut -d@ -f6`
-	eguna=`echo $linea | cut -d@ -f2`
-	hilabetea=`echo $linea | cut -d@ -f1`
-	ordua=`echo $linea | cut -d@ -f3`
-	echo -e "$hilabetea\t$eguna\t$ordua\t$erabiltzailea\t$agindua\n"
+	if echo "$linea" | grep -q "$txarto"; then
+		status="fail"
+	else
+		status="accept"
+	fi
+	erabiltzailea=`echo $linea | cut -d@ -f7` #Erabiltzailea
+	eguna=`echo $linea | cut -dT -f1` #Konexioaren eguna, YYY-MM-DD
+	hilabete=`echo $eguna | cut -d- -f2` #Konexioaren hilabetea, MM
+	zenb=`echo $eguna | cut -d- -f3` #Konexioaren eguna
+	beste2=`echo $linea | cut -dT -f2` #Ordua hartzeko laguntzailea
+	ordua=`echo $beste2 | cut -d. -f1` #Ordua
+	astea=$(date -d "$eguna" +'%W') #Konexioaren astea
+	
+	asteaOrd=$(date +'%W') #Ordenagailuaren astea
+	egunaOrd=$(date +'%d') #Ordenagailuaren eguna
+	hilaOrd=$(date +'%m') #Ordenagailuaren hilabetea
+	
+	if [[ "$egunaOrd" == "$zenb" && "$hilaOrd" == "$hilabete" && "$asteaOrd" == "$astea" ]]; then
+		case $hilabete in
+			01)hilabetea=`echo "Jan"`;;
+			02)hilabetea=`echo "Feb"`;;
+			03)hilabetea=`echo "Mar"`;;
+			04)hilabetea=`echo "Apr"`;;
+			05)hilabetea=`echo "May"`;;
+			06)hilabetea=`echo "Jun"`;;
+			07)hilabetea=`echo "Jul"`;;
+			08)hilabetea=`echo "Aug"`;;
+			09)hilabetea=`echo "Sep"`;;
+			10)hilabetea=`echo "Oct"`;;
+			11)hilabetea=`echo "Nov"`;;
+			12)hilabetea=`echo "Dec"`;;
+		esac	
+
+	
+		echo -e "Status: [$status] Account name: $erabiltzailea Date: $hilabetea, $zenb, $ordua"
+	fi
     done
     rm auth.log.txt auth.log.ilarazka.txt
     
