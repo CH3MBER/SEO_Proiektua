@@ -2,27 +2,31 @@
 #0. Ariketa
 function proiektufitxategiakPaketatuetaKonprimitu()
 {
-  cd /home/$USER/formulariocitas
-  tar cvzf  /home/$USER/formulariocitas.tar.gz app.py script.sql  .env requirements.txt templates/*
+    cd /home/$USER/formulariocitas
+    tar cvzf  /home/$USER/formulariocitas.tar.gz app.py script.sql  .env requirements.txt templates/*
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #1. Ariketa
 function mysqlKendu()
 {
-#Zerbitzua gelditu
-sudo systemctl stop mysql.service
-#Ezabatu paketeak +konfigurazioak +datuak
-sudo apt purge mysql-server mysql-client mysql-common mysql-server-core-* mysql-client-core-*
-#ezabatu beharrezkoak ez diren paketeak
-sudo apt autoremove
-#Cache-a garbitu
-sudo apt autoclean
-#Datuak ezabatzen
-sudo rm -rf /var/lib/mysql
-#Konfigurazioa ezabatzen
-sudo rm -rf /etc/mysql/
-#bitakora ezabatzen
-sudo rm -rf /var/log/mysql
+    #Zerbitzua gelditu
+    sudo systemctl stop mysql.service
+    #Ezabatu paketeak +konfigurazioak +datuak
+    sudo apt purge mysql-server mysql-client mysql-common mysql-server-core-* mysql-client-core-*
+    #ezabatu beharrezkoak ez diren paketeak
+    sudo apt autoremove
+    #Cache-a garbitu
+    sudo apt autoclean
+    #Datuak ezabatzen
+    sudo rm -rf /var/lib/mysql
+    #Konfigurazioa ezabatzen
+    sudo rm -rf /etc/mysql/
+    #bitakora ezabatzen
+    sudo rm -rf /var/log/mysql
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #2. Ariketa
@@ -38,7 +42,7 @@ function kokapenberriaSortu()
     echo " katalogoaren jabetza aldatzen..."
     sudo chown -R $USER:$USER /var/www/formulariocitas
     echo ""
-    read -p "PULSA ENTER PARA CONTINUAR..."
+    read -p "ENTER SAKATU..."
 }
 
 #3. Ariketa
@@ -51,13 +55,27 @@ function proiektufitxategiakkokapenberrianKopiatu()
     else
     	echo -e " Ez dago fitxategia."
     fi
-    read -p "PULSA ENTER PARA CONTINUAR..."
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #4. Ariketa
 function mysqlInstalatu()
 {
-echo -e " Blablabla" 
+    aux=$(sudo dpkg -s mysql-server | grep "Status: install ok installed")
+    if [ -z "$aux" ]; then
+	sudo apt update
+	sudo apt install mysql-server
+	echo -e "Instalatu egin da \n"
+    fi
+	
+    if  ! systemctl is-active --quiet mysql
+    then 
+	sudo systemctl start mysql.service
+    fi
+    echo -e "Abiarazita dago \n"
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #5. Ariketa
@@ -72,6 +90,8 @@ function datubasekoerabiltzaileaSortu()
     echo "Erabiltzailea sortzeko SQL script-a sortu da hemen: $SQL_SCRIPT"
     echo "Exekutatzen: sudo mysql < $SQL_SCRIPT"
     sudo mysql < "$SQL_SCRIPT"
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #6. Ariketa
@@ -79,6 +99,8 @@ function datubaseaSortu()
 {
     sudo mysql -u lsi -p < /var/www/formulariocitas/script.sql
     #konprobaketa sar daiteke
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #7.Ariketa
@@ -101,7 +123,7 @@ function ingurunebirtualaSortu()
     python3 -m venv venv
     source /var/www/formulariocitas/venv/bin/activate
     echo ""
-    read -p "PULSA ENTER PARA CONTINUAR..."
+    read -p "ENTER SAKATU..."
 }
 
 #8. Ariketa
@@ -114,13 +136,22 @@ function ingurunebirtualeanliburutegiakInstalatu()
     sudo apt install -y python3-pip
     pip install -r /var/www/formulariocitas/requirements.txt
     echo ""
-    read -p "PULSA ENTER PARA CONTINUAR..."
+    read -p "ENTER SAKATU..."
 }
 
 #9. Ariketa
 function flaskekozerbirariarekindenaProbatu()
 {
-echo -e " Formulariocitas\n"
+    source /var/www/formulariocitas/venv/bin/activate
+    if ls -lias | grep app.py
+    then
+    	python3 app.py &
+    	firefox http://127.0.0.1:5000/ &
+    else 
+    	echo -e "\napp.py ez da existitzen \n"
+    fi
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #10. Ariketa
@@ -133,8 +164,8 @@ function nginxInstalatu()
     else
 	echo "Instalatuta dago"
     fi
-    	echo ""
-    read -p "PULSA ENTER PARA CONTINUAR..."
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #11. Ariketa
@@ -147,6 +178,8 @@ function nginxMatxanJarri()
     	sudo systemctl start nginx
     	echo -e "Aktibatu da\n"
     fi
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #12. Ariketa
@@ -157,39 +190,113 @@ function nginxatakaTesteatu()
 	sudo apt install net-tools
     fi
     sudo netstat -tulnp | grep nginx
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #13. Ariketa
 function indexIkusi()
 {
-echo -e "dnjads"
+    firefox http://127.0.0.1 &
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #14. Ariketa
 function indexPertsonalizatu()
 {
-echo -e " Formulariocitas\n"
+    index='<!DOCTYPE html>
+	<html>
+	<head>
+	<title>GL2-ko bakarrak</title>
+	</head>
+	<body>
+	<center>
+	<h1>Taldea: GL2-ko bakarrak</h1>
+	<br>
+	<h2>Azpitaldea: Astearteak</h2>
+	</center>
+	<br>
+	<table border="2" align="center">
+		<thead>
+			<tr>
+				<th>Izena</th>
+				<th>Abizenak</th>
+				<th>Posta elektronikoa</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Surya</th>
+				<td>Ortega Aguirre</th>
+				<td>sortega024@ikasle.ehu.eus</th>
+			</tr>
+			<tr>
+				<td>Gaizka</th>
+				<td>Divasson Jaureguibarria</th>
+				<td>gdivasson001@ikasle.ehu.eus</th>
+			</tr> 
+			<tr>
+				<td>Asier</th>
+				<td>Barrio Borge</th>
+				<td>abarrio028@ikasle.ehu.eus</th>
+			</tr>
+			<tr>
+				<td>Asier</th>
+				<td>Las Hayas Fernández</th>
+				<td>alashayas001@ikasle.ehu.eus</th>
+			</tr>
+			<tr>
+				<td>Uriel</th>
+				<td>Martin Pulido</th>
+				<td>umartin025@ikasle.ehu.eus</th>
+			</tr>
+		</tbody>
+	</table>
+	<center>
+	<br>
+	<h2>Taldeburua:</h2>
+	<p>Surya Ortega Aguirre</p>
+	<p>sortega024@ikasle.ehu.eus</p>
+	</center>
+	</body>
+	</html>'
+    echo "$index" > index.html
+    sudo mv index.html /var/www/html
+    firefox http://127.0.0.1/index.html &
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #15. Ariketa
 function gunicornInstalatu()
 {
-    cd /var/www/formulariocitas
-    source /var/www/formulariocitas/venv/bin/activate
-    if pip show gunicorn > /dev/null 2>&1; then
+    if pip list | grep -q gunicorn; then
         echo "Gunicorn dagoeneko instalatuta dago ingurune birtualean."
     else
         echo "Gunicorn ez dago instalatuta. Instalatzen..."
+        source /var/www/formulariocitas/venv/bin/activate
         pip install gunicorn
     fi
     echo ""
-    read -p "PULSA ENTER PARA CONTINUAR..."
+    read -p "ENTER SAKATU..."
 }
 
 #16. Ariketa
 function gunicornKonfiguratu()
 {
-echo -e " Formulariocitas\n"
+    if ! ls -lias | grep -q wsgi.py
+    then 
+	wsgi='from app import app 
+		if __name__ == "__main__":
+			app.run()'
+	echo "$wsgi" > wsgi.py
+    fi
+    source /var/www/formulariocitas/venv/bin/activate
+    /var/www/formulariocitas gunicorn --bind 127.0.0.1:5000 wsgi:app
+    firefox http://127.0.0.1:5000 &
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #17. Ariketa
@@ -201,10 +308,13 @@ function jabetasunaetabaimenakEzarri()
     	echo -e "'$PROIEKTUA' karpeta ez da existitzen"
     	return 1
     fi
-    
-    sudo chown -R www-data:www-data "$PROIEKTUA"
-    sudo find "$PROIEKTUA" -type d -exec chmod 755 {} \;
-    sudo find "$PROIEKTUA" -type f -exec chmod 644 {} \;
+    sudo chmod -R 755 /var/www/formulariocitas
+    sudo chmod 600 /var/www/formulariocitas/.env
+    sudo chmod 600 /var/www/formulariocitas/app.py
+    sudo chown -R www-data:www-data /var/www/formulariocitas
+    echo -e "Baimenak eta jabetzak aldatu dira \n"
+    echo ""
+    read -p "ENTER SAKATU..."
 
 }
 
@@ -230,12 +340,24 @@ EOF
     sudo systemctl daemon-reload
     sudo systemctl enable formulariocitas.service
     sudo systemctl start formulariocitas.service
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #19. Ariketa
 function nginxenatakaAldatu()
 {
-echo -e " Formulariocitas\n"
+    kodea='server {listen 3128;server_name localhost;location / {include proxy_params;proxy_pass  http://127.0.0.1:5000;}}'
+    echo "$kodea" | sudo tee /etc/nginx/conf.d/formulariocitas.conf > /dev/null
+    sudo nginx -t &> /dev/null
+    if [ $? -eq 0 ]
+    then
+	echo -e "Ez dago sintaxi errorerik \n"
+    else
+    	echo -e "Sintaxi errorea detektatuta \n"
+    fi
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #20. Ariketa
@@ -243,6 +365,8 @@ function nginxkonfiguraziofitxategiakKargatu()
 {
     echo "NGINX konfigurazio-aldaketak kargatzen..."
     sudo systemctl reload nginx
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #21. Ariketa
@@ -250,12 +374,16 @@ function nginxBerrabiarazi()
 {
     echo "NGINX web zerbitzua berrabiarazten..."
     sudo systemctl restart nginx
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #22. Ariketa
 function hostbirtualaProbatu()
 {
-echo -e " Formulariocitas\n"
+    firefox http://127.0.0.1:3128/ &
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #23. Ariketa
@@ -269,18 +397,65 @@ function nginxlogakIkuskatu()
     else
         echo "Errorea: $LOGFILE ez da existitzen."
     fi
+    echo ""
+    read -p "ENTER SAKATU..."
 }
-
+	
 #24. Ariketa
 function ekoizpenzerbitzarianKopiatu()
 {
-echo -e " Formulariocitas\n"
+    aux=$(sudo dpkg -s openssh-server | grep "Status: install ok installed")
+    if [ -z "$aux" ]; then
+        sudo apt update
+	sudo apt install openssh-server
+    else
+	echo "Instalatuta dago"
+    fi
+    	echo ""
+
+    if systemctl is-active -q ssh
+    then
+    	echo -e "Aktibatuta dagoeneko\n"
+    else
+    	sudo systemctl start ssh
+    	echo -e "Aktibatu da\n"	
+    fi	
+    	
+    sudo ufw allow ssh	
+    read -p "IP helbidea sartu" ip	
+    #ip="127.0.0.1"
+    ssh $USER@$ip
+    #exit
+    
+    scp -r /home/$USER/formulariocitas.tar.gz $USER@$ip:/tmp
+    scp -r /home/$USER/menu.sh $USER@$ip:/tmp
+
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #25. Ariketa
 function sshkonexiosaiakerakKontrolatu()
 {
-echo -e " Formulariocitas\n"
+    cat /var/log/auth.log > auth.log.txt
+    less auth.log.txt | tr -s ' ' '@' > auth.log.ilarazka.txt
+    txarto="Failed@password"
+    ondo="Accepted@password"
+    echo -e "Konexio saiakerak gaur, aste honetan eta hilabete honetan hauek izan dira:\n"
+    echo -e "____________________________\n"
+    for linea in `less auth.log.ilarazka.txt | grep $txarto`
+    do
+	erabiltzailea=`echo $linea | cut -d@ -f15`
+	agindua=`echo $linea | cut -d@ -f6`
+	eguna=`echo $linea | cut -d@ -f2`
+	hilabetea=`echo $linea | cut -d@ -f1`
+	ordua=`echo $linea | cut -d@ -f3`
+	echo -e "$hilabetea\t$eguna\t$ordua\t$erabiltzailea\t$agindua\n"
+    done
+    rm auth.log.txt auth.log.ilarazka.txt
+    
+    echo ""
+    read -p "ENTER SAKATU..."
 }
 
 #26. Ariketa
