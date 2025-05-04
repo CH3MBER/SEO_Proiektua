@@ -311,7 +311,26 @@ function ekoizpenzerbitzarianKopiatu()
 #25. Ariketa
 function sshkonexiosaiakerakKontrolatu()
 {
- less /var/log/auth.log | grep "sshd"
+ 	hilea=$(date +"%Y-%m")
+	(zcat /var/log/auth.log*.gz; cat /var/log/auth.log*) | grep sshd | grep password | grep ^$hilea> loggak.txt
+
+	echo -e "Konexio saiakerak ssh bidez hile, aste eta egun honetan: \n"
+	while read -r linea
+	do
+		if echo "$linea" | grep -q "Failed"
+		then
+			egoera='Fail'
+		else
+			egoera='Accept'
+		fi
+		erabiltzailea=$(echo "$linea" | sed -n 's/.* \([[:alnum:]_]*\) from.*/\1/p')
+		data=$(echo "$linea" | awk '{print $1}' | cut -d'T' -f1)
+		ordua=$(echo "$linea" | awk '{print $1}' | cut -d'T' -f2 | cut -d'.' -f1)
+		echo -e "Status: $egoera    Account name: $erabiltzailea    Date: $data $ordua \n"
+	done < loggak.txt
+	
+	rm loggak.txt
+	
 }
 
 #26. Ariketa
